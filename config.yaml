@@ -1,0 +1,5 @@
+svchost: :8080
+dbuser: root
+dbpassword: "qwe123Q!"
+dbhost: localhost
+dbname: image_uploader
