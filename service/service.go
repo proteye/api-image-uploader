@@ -1,10 +1,10 @@
 package service
 
 import (
-	"api-image-uploader/api"
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
+	"github.com/proteye/api-image-uploader/api"
 )
 
 type Config struct {

@@ -1,9 +1,9 @@
 package service
 
 import (
-	"api-image-uploader/api"
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
+	"github.com/proteye/api-image-uploader/api"
 	"io"
 	"log"
 	"os"

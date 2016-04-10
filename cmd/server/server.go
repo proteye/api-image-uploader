@@ -1,9 +1,9 @@
 package main
 
 import (
-	"api-image-uploader/service"
 	"errors"
 	"github.com/codegangsta/cli"
+	"github.com/proteye/api-image-uploader/service"
 	"gopkg.in/yaml.v1"
 	"io/ioutil"
 	"log"
