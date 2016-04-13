@@ -5,6 +5,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 	"github.com/proteye/api-image-uploader/api"
+	"time"
 )
 
 type Config struct {
@@ -37,6 +38,35 @@ func (s *ImageUploaderService) Migrate(cfg Config) error {
 	db.SingularTable(true)
 
 	db.AutoMigrate(&api.Image{})
+	db.AutoMigrate(&api.ImageType{})
+	db.AutoMigrate(&api.Meta{})
+
+	db.Model(&api.Image{}).AddForeignKey("image_type_id", "image_type(id)", "RESTRICT", "RESTRICT")
+
+	meta := api.Meta{
+		Name:       "image_count",
+		Value_int:  0,
+		Created_at: int32(time.Now().Unix()),
+		Updated_at: int32(time.Now().Unix()),
+	}
+	db.Create(&meta)
+
+	imageType := api.ImageType{
+		Name:       "order",
+		Path:       "image",
+		Created_at: int32(time.Now().Unix()),
+		Updated_at: int32(time.Now().Unix()),
+	}
+	db.Create(&imageType)
+
+	imageType = api.ImageType{
+		Name:       "user",
+		Path:       "user",
+		Created_at: int32(time.Now().Unix()),
+		Updated_at: int32(time.Now().Unix()),
+	}
+	db.Create(&imageType)
+
 	return nil
 }
 func (s *ImageUploaderService) Run(cfg Config) error {
@@ -53,7 +83,8 @@ func (s *ImageUploaderService) Run(cfg Config) error {
 	r.GET("/images", imageUploaderResource.GetAllImages)
 	r.GET("/images/:id", imageUploaderResource.GetImage)
 	r.POST("/images", imageUploaderResource.CreateImage)
-	r.POST("/images/upload", imageUploaderResource.UploadImage)
+	r.POST("/images/order-upload", imageUploaderResource.UploadOrderImage)
+	r.POST("/images/user-upload", imageUploaderResource.UploadUserImage)
 	r.PUT("/images/:id", imageUploaderResource.UpdateImage)
 	r.DELETE("/images/:id", imageUploaderResource.DeleteImage)
 
