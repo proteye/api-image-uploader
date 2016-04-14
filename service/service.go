@@ -14,9 +14,15 @@ type Config struct {
 	DbPassword string
 	DbHost     string
 	DbName     string
-	Address    string
-	Upload_dir string
-	Upload_url string
+	Service    ServiceConfig
+}
+
+type ServiceConfig struct {
+	Address      string
+	Upload_dir   string
+	Upload_url   string
+	Thumb_dir    string
+	Thumb_suffix string
 }
 
 type ImageUploaderService struct {
@@ -38,6 +44,7 @@ func (s *ImageUploaderService) Migrate(cfg Config) error {
 	if err != nil {
 		return err
 	}
+
 	db.SingularTable(true)
 
 	db.AutoMigrate(&api.Image{})
@@ -56,7 +63,7 @@ func (s *ImageUploaderService) Migrate(cfg Config) error {
 
 	imageType := api.ImageType{
 		Name:         "order",
-		Path:         "image",
+		Path:         "/image",
 		Thumb_width:  320,
 		Thumb_height: 240,
 		Created_at:   int32(time.Now().Unix()),
@@ -66,7 +73,7 @@ func (s *ImageUploaderService) Migrate(cfg Config) error {
 
 	imageType = api.ImageType{
 		Name:         "user",
-		Path:         "user",
+		Path:         "/user",
 		Thumb_width:  150,
 		Thumb_height: 150,
 		Created_at:   int32(time.Now().Unix()),
@@ -83,13 +90,12 @@ func (s *ImageUploaderService) Run(cfg Config) error {
 	}
 	db.SingularTable(true)
 
-	imageUploaderResource := &ImageUploaderResource{db: *db, address: cfg.Address, upload_dir: cfg.Upload_dir, upload_url: cfg.Upload_url}
+	imageUploaderResource := &ImageUploaderResource{db: *db, config: cfg.Service}
 
 	r := gin.Default()
 
 	r.GET("/images", imageUploaderResource.GetAllImages)
 	r.GET("/images/:id", imageUploaderResource.GetImage)
-	r.POST("/images", imageUploaderResource.CreateImage)
 	r.POST("/images/order-upload", imageUploaderResource.UploadOrderImage)
 	r.POST("/images/user-upload", imageUploaderResource.UploadUserImage)
 	r.PUT("/images/:id", imageUploaderResource.UpdateImage)

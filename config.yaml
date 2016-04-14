@@ -3,6 +3,9 @@ dbuser: root
 dbpassword: "qwe123Q!"
 dbhost: localhost
 dbname: image_uploader
-address: "http://levsha.dev"
-upload_dir: "/var/www/levsha/web/uploads/"
-upload_url: "/uploads/"
+service:
+  address: "http://levsha.dev"
+  upload_dir: "/tmp/uploads"
+  upload_url: "/uploads"
+  thumb_dir: "/thumbs"
+  thumb_suffix: "_thumb"
