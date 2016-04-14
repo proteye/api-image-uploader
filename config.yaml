@@ -3,3 +3,4 @@ dbuser: root
 dbpassword: "qwe123Q!"
 dbhost: localhost
 dbname: image_uploader
+address: "http://levsha.dev"

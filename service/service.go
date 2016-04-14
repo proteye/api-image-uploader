@@ -14,6 +14,7 @@ type Config struct {
 	DbPassword string
 	DbHost     string
 	DbName     string
+	Address    string
 }
 
 type ImageUploaderService struct {
@@ -52,18 +53,22 @@ func (s *ImageUploaderService) Migrate(cfg Config) error {
 	db.Create(&meta)
 
 	imageType := api.ImageType{
-		Name:       "order",
-		Path:       "image",
-		Created_at: int32(time.Now().Unix()),
-		Updated_at: int32(time.Now().Unix()),
+		Name:         "order",
+		Path:         "image",
+		Thumb_width:  320,
+		Thumb_height: 240,
+		Created_at:   int32(time.Now().Unix()),
+		Updated_at:   int32(time.Now().Unix()),
 	}
 	db.Create(&imageType)
 
 	imageType = api.ImageType{
-		Name:       "user",
-		Path:       "user",
-		Created_at: int32(time.Now().Unix()),
-		Updated_at: int32(time.Now().Unix()),
+		Name:         "user",
+		Path:         "user",
+		Thumb_width:  150,
+		Thumb_height: 150,
+		Created_at:   int32(time.Now().Unix()),
+		Updated_at:   int32(time.Now().Unix()),
 	}
 	db.Create(&imageType)
 
@@ -76,7 +81,7 @@ func (s *ImageUploaderService) Run(cfg Config) error {
 	}
 	db.SingularTable(true)
 
-	imageUploaderResource := &ImageUploaderResource{db: *db}
+	imageUploaderResource := &ImageUploaderResource{db: *db, address: cfg.Address}
 
 	r := gin.Default()
 
