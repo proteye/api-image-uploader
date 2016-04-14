@@ -15,6 +15,8 @@ type Config struct {
 	DbHost     string
 	DbName     string
 	Address    string
+	Upload_dir string
+	Upload_url string
 }
 
 type ImageUploaderService struct {
@@ -81,7 +83,7 @@ func (s *ImageUploaderService) Run(cfg Config) error {
 	}
 	db.SingularTable(true)
 
-	imageUploaderResource := &ImageUploaderResource{db: *db, address: cfg.Address}
+	imageUploaderResource := &ImageUploaderResource{db: *db, address: cfg.Address, upload_dir: cfg.Upload_dir, upload_url: cfg.Upload_url}
 
 	r := gin.Default()
 

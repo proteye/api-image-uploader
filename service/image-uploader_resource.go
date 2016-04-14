@@ -22,9 +22,6 @@ import (
 const IMAGE_POST_FIELD = "image"
 const META_COUNT_FIELD = "image_count"
 
-const UPLOAD_URL = "/uploads/"
-const UPLOAD_DIR = "/var/www/levsha/web/uploads/"
-
 const THUMB_SUFFIX = "_thumb"
 const THUMB_DIR = "thumbs/"
 
@@ -32,8 +29,10 @@ const ORDER_IMAGE_TYPE = "order"
 const USER_IMAGE_TYPE = "user"
 
 type ImageUploaderResource struct {
-	db      gorm.DB
-	address string
+	db         gorm.DB
+	address    string
+	upload_dir string
+	upload_url string
 }
 
 func (ir *ImageUploaderResource) UploadOrderImage(c *gin.Context) {
@@ -206,10 +205,10 @@ func SaveImage(ir *ImageUploaderResource, c *gin.Context, imageTypeName string) 
 		return response, api_error
 	}
 	file_type := header.Header["Content-Type"][0]
-	file_path := UPLOAD_DIR + apiImageType.Path + "/" + filename
-	thumb_path := UPLOAD_DIR + apiImageType.Path + "/" + THUMB_DIR + thumbname
-	file_url := ir.address + UPLOAD_URL + apiImageType.Path + "/" + filename
-	thumb_url := ir.address + UPLOAD_URL + apiImageType.Path + "/" + THUMB_DIR + thumbname
+	file_path := ir.upload_dir + apiImageType.Path + "/" + filename
+	thumb_path := ir.upload_dir + apiImageType.Path + "/" + THUMB_DIR + thumbname
+	file_url := ir.address + ir.upload_url + apiImageType.Path + "/" + filename
+	thumb_url := ir.address + ir.upload_url + apiImageType.Path + "/" + THUMB_DIR + thumbname
 
 	log.Print(filename)
 	log.Print(thumbname)

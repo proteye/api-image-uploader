@@ -4,3 +4,5 @@ dbpassword: "qwe123Q!"
 dbhost: localhost
 dbname: image_uploader
 address: "http://levsha.dev"
+upload_dir: "/var/www/levsha/web/uploads/"
+upload_url: "/uploads/"
