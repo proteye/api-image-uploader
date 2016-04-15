@@ -3,6 +3,7 @@ dbuser: root
 dbpassword: "qwe123Q!"
 dbhost: localhost
 dbname: image_uploader
+mode: debug
 service:
   address: "http://levsha.dev"
   upload_dir: "/var/www/levsha/web/uploads"

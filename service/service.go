@@ -14,6 +14,7 @@ type Config struct {
 	DbPassword string
 	DbHost     string
 	DbName     string
+	Mode       string
 	Service    ServiceConfig
 }
 
@@ -91,6 +92,12 @@ func (s *ImageUploaderService) Run(cfg Config) error {
 	db.SingularTable(true)
 
 	imageUploaderResource := &ImageUploaderResource{db: *db, config: cfg.Service}
+
+	if cfg.Mode == "release" {
+		gin.SetMode(gin.ReleaseMode)
+	} else {
+		gin.SetMode(gin.DebugMode)
+	}
 
 	r := gin.Default()
 
