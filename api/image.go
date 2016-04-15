@@ -1,7 +1,8 @@
 package api
 
 type Image struct {
-	ID          int32  `json:"id"`
+	ID          int32 `json:"id"`
+	ImageType   ImageType
 	ImageTypeID int32  `json:"image_type_id" binding:"required" gorm:"not null"`
 	Filename    string `json:"filename" binding:"required" gorm:"size:255;not null"`
 	Original    string `json:"original" binding:"required" gorm:"size:255;not null"`

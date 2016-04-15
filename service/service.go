@@ -96,8 +96,7 @@ func (s *ImageUploaderService) Run(cfg Config) error {
 
 	r.GET("/images", imageUploaderResource.GetAllImages)
 	r.GET("/images/:id", imageUploaderResource.GetImage)
-	r.POST("/images/order-upload", imageUploaderResource.UploadOrderImage)
-	r.POST("/images/user-upload", imageUploaderResource.UploadUserImage)
+	r.POST("/images/upload/:image_type", imageUploaderResource.UploadImage)
 	r.PUT("/images/:id", imageUploaderResource.UpdateImage)
 	r.DELETE("/images/:id", imageUploaderResource.DeleteImage)
 

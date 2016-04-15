@@ -16,36 +16,21 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 )
 
 const IMAGE_POST_FIELD = "image"
 const META_COUNT_FIELD = "image_count"
 
-const THUMB_SUFFIX = "_thumb"
-const THUMB_DIR = "thumbs/"
-
-const ORDER_IMAGE_TYPE = "order"
-const USER_IMAGE_TYPE = "user"
-
 type ImageUploaderResource struct {
 	db     gorm.DB
 	config ServiceConfig
 }
 
-func (ir *ImageUploaderResource) UploadOrderImage(c *gin.Context) {
-	response, apiError := SaveImage(ir, c, ORDER_IMAGE_TYPE)
-	if apiError != nil {
-		log.Print(apiError.Message)
-		c.JSON(500, apiError)
-	} else {
-		log.Print(*response)
-		c.JSON(201, response)
-	}
-}
-
-func (ir *ImageUploaderResource) UploadUserImage(c *gin.Context) {
-	response, apiError := SaveImage(ir, c, USER_IMAGE_TYPE)
+func (ir *ImageUploaderResource) UploadImage(c *gin.Context) {
+	image_type := c.Param("image_type")
+	response, apiError := SaveImage(ir, c, image_type)
 	if apiError != nil {
 		log.Print(apiError.Message)
 		c.JSON(500, apiError)
@@ -117,10 +102,29 @@ func (ir *ImageUploaderResource) DeleteImage(c *gin.Context) {
 
 	var image api.Image
 
-	if ir.db.First(&image, id).RecordNotFound() {
+	if ir.db.Preload("ImageType").First(&image, id).RecordNotFound() {
 		c.JSON(404, api.NewError("Image is not found", 1))
 	} else {
+		/* Remove from database */
 		ir.db.Delete(&image)
+
+		/* Remove files - large and thumb*/
+		dirpath := ir.config.Upload_dir + image.ImageType.Path
+		filename, err := getFilenameWithoutExt(image.Filename)
+		if err != nil {
+			c.JSON(500, api.NewError("Image filename is empty", 2))
+			return
+		}
+
+		filepath.Walk(dirpath, func(path string, f os.FileInfo, err error) error {
+			idx := strings.Index(path, filename)
+			if idx >= 0 {
+				os.Remove(path)
+				log.Print("File removed: " + path)
+			}
+			return nil
+		})
+
 		c.Data(204, "application/json", make([]byte, 0))
 	}
 }
@@ -133,6 +137,20 @@ func (ir *ImageUploaderResource) getId(c *gin.Context) (int32, error) {
 		return 0, err
 	}
 	return int32(id), nil
+}
+
+func getFilenameWithoutExt(inFilename string) (string, error) {
+	var filename string
+
+	if inFilename == "" {
+		err := errors.New("Filename is empty")
+		return filename, err
+	}
+
+	lastDot := strings.LastIndex(inFilename, ".")
+	filename = inFilename[:lastDot]
+
+	return filename, nil
 }
 
 func UniqFilename(origFilename string, thumbSuffix string) (string, string, error) {
@@ -195,9 +213,9 @@ func SaveImage(ir *ImageUploaderResource, c *gin.Context, imageTypeName string) 
 	file_url := ir.config.Address + ir.config.Upload_url + apiImageType.Path + "/" + filename
 	thumb_url := ir.config.Address + ir.config.Upload_url + apiImageType.Path + ir.config.Thumb_dir + "/" + thumbname
 
-	log.Print(filename)
-	log.Print(thumbname)
 	log.Print(header.Filename)
+	log.Print(file_path)
+	log.Print(thumb_path)
 
 	/* Save large image */
 	out, err := os.Create(file_path)
