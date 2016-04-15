@@ -13,7 +13,6 @@ import (
 	"image/png"
 	"io"
 	"log"
-	"math"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -177,48 +176,13 @@ func UniqFilename(origFilename string, thumbSuffix string) (string, string, erro
 }
 
 func thumbnail(width uint, height uint, img image.Image) image.Image {
-	/*
-		var ratio, imgRatio float32
-		var thumbWidth, thumbHeight uint
-
-		if width >= height {
-			ratio = float32(width) / float32(height)
-		} else {
-			ratio = float32(height) / float32(width)
-		}
-
-		imgWidth := uint(img.Bounds().Max.X)
-		imgHeight := uint(img.Bounds().Max.Y)
-
-		if imgWidth < width || imgHeight < height {
-			return img
-		}
-
-		imgRatio = float32(imgWidth) / float32(imgHeight)
-
-		if ratio >= imgRatio {
-			thumbWidth = width
-			thumbHeight = 0
-		} else {
-			thumbWidth = 0
-			thumbHeight = height
-		}
-
-		log.Print(ratio)
-		log.Print(imgRatio)
-		log.Print(thumbWidth)
-		log.Print(thumbHeight)
-	*/
-
+	var ratio, imgRatio float32
 	var thumbWidth, thumbHeight uint
-	var maxNewDimension, minNewDimension uint
 
-	if width > height {
-		maxNewDimension = width
-		minNewDimension = height
+	if width >= height {
+		ratio = float32(width) / float32(height)
 	} else {
-		maxNewDimension = height
-		minNewDimension = width
+		ratio = float32(height) / float32(width)
 	}
 
 	imgWidth := uint(img.Bounds().Max.X)
@@ -227,26 +191,18 @@ func thumbnail(width uint, height uint, img image.Image) image.Image {
 	log.Print(imgWidth)
 	log.Print(imgHeight)
 
-	var widthScaleFactor float32
-	var heightScaleFactor float32
-
-	if imgWidth > imgHeight {
-		widthScaleFactor = float32(imgWidth) / float32(maxNewDimension)
-		heightScaleFactor = float32(imgHeight) / float32(minNewDimension)
-	} else {
-		widthScaleFactor = float32(imgWidth) / float32(minNewDimension)
-		heightScaleFactor = float32(imgHeight) / float32(maxNewDimension)
-	}
-
-	if widthScaleFactor < 1 || heightScaleFactor < 1 {
+	if imgWidth < width || imgHeight < height {
 		return img
 	}
-	if widthScaleFactor < heightScaleFactor {
-		thumbWidth = uint(math.Floor(float64(imgWidth) / float64(widthScaleFactor)))
-		thumbHeight = uint(math.Floor(float64(imgHeight) / float64(widthScaleFactor)))
+
+	imgRatio = float32(imgWidth) / float32(imgHeight)
+
+	if ratio >= imgRatio {
+		thumbWidth = width
+		thumbHeight = 0
 	} else {
-		thumbWidth = uint(math.Floor(float64(imgWidth) / float64(heightScaleFactor)))
-		thumbHeight = uint(math.Floor(float64(imgHeight) / float64(heightScaleFactor)))
+		thumbWidth = 0
+		thumbHeight = height
 	}
 
 	log.Print(thumbWidth)
