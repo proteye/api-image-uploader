@@ -30,9 +30,9 @@ func getConfig(c *cli.Context) (service.Config, error) {
 func main() {
 
 	app := cli.NewApp()
-	app.Name = "api-image-uploader"
+	app.Name = "Image Uploader RESTful API"
 	app.Usage = "upload images to server"
-	app.Version = "0.1.0"
+	app.Version = "1.0.0"
 
 	app.Flags = []cli.Flag{
 		cli.StringFlag{Name: "config, c", Value: "config.yaml", Usage: "config file to use", EnvVar: "APP_CONFIG"},

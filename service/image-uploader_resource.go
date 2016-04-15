@@ -262,7 +262,7 @@ func SaveImage(ir *ImageUploaderResource, c *gin.Context, imageTypeName string) 
 		return response, api_error
 	}
 
-	thumb := resize.Thumbnail(uint(apiImageType.Thumb_width), uint(apiImageType.Thumb_height), thumb_img, resize.Lanczos3)
+	thumb := resize.Resize(uint(apiImageType.Thumb_width), uint(apiImageType.Thumb_height), thumb_img, resize.Lanczos3)
 
 	out, err = os.Create(thumb_path)
 
