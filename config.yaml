@@ -5,8 +5,8 @@ dbhost: localhost
 dbname: image_uploader
 mode: debug
 service:
-  address: "http://levsha.dev"
-  upload_dir: "/var/www/levsha/web/uploads"
+  address: "http://localhost"
+  upload_dir: "/tmp/uploads"
   upload_url: "/uploads"
   thumb_dir: "/thumbs"
   thumb_suffix: "_thumb"

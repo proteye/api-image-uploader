@@ -13,6 +13,7 @@ import (
 	"image/png"
 	"io"
 	"log"
+	"math"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -22,6 +23,7 @@ import (
 
 const IMAGE_POST_FIELD = "image"
 const META_COUNT_FIELD = "image_count"
+const THUMB_INTERPOLATION = resize.Lanczos3
 
 type ImageUploaderResource struct {
 	db     gorm.DB
@@ -174,6 +176,85 @@ func UniqFilename(origFilename string, thumbSuffix string) (string, string, erro
 	return filename, thumbname, err
 }
 
+func thumbnail(width uint, height uint, img image.Image) image.Image {
+	/*
+		var ratio, imgRatio float32
+		var thumbWidth, thumbHeight uint
+
+		if width >= height {
+			ratio = float32(width) / float32(height)
+		} else {
+			ratio = float32(height) / float32(width)
+		}
+
+		imgWidth := uint(img.Bounds().Max.X)
+		imgHeight := uint(img.Bounds().Max.Y)
+
+		if imgWidth < width || imgHeight < height {
+			return img
+		}
+
+		imgRatio = float32(imgWidth) / float32(imgHeight)
+
+		if ratio >= imgRatio {
+			thumbWidth = width
+			thumbHeight = 0
+		} else {
+			thumbWidth = 0
+			thumbHeight = height
+		}
+
+		log.Print(ratio)
+		log.Print(imgRatio)
+		log.Print(thumbWidth)
+		log.Print(thumbHeight)
+	*/
+
+	var thumbWidth, thumbHeight uint
+	var maxNewDimension, minNewDimension uint
+
+	if width > height {
+		maxNewDimension = width
+		minNewDimension = height
+	} else {
+		maxNewDimension = height
+		minNewDimension = width
+	}
+
+	imgWidth := uint(img.Bounds().Max.X)
+	imgHeight := uint(img.Bounds().Max.Y)
+
+	log.Print(imgWidth)
+	log.Print(imgHeight)
+
+	var widthScaleFactor float32
+	var heightScaleFactor float32
+
+	if imgWidth > imgHeight {
+		widthScaleFactor = float32(imgWidth) / float32(maxNewDimension)
+		heightScaleFactor = float32(imgHeight) / float32(minNewDimension)
+	} else {
+		widthScaleFactor = float32(imgWidth) / float32(minNewDimension)
+		heightScaleFactor = float32(imgHeight) / float32(maxNewDimension)
+	}
+
+	if widthScaleFactor < 1 || heightScaleFactor < 1 {
+		return img
+	}
+	if widthScaleFactor < heightScaleFactor {
+		thumbWidth = uint(math.Floor(float64(imgWidth) / float64(widthScaleFactor)))
+		thumbHeight = uint(math.Floor(float64(imgHeight) / float64(widthScaleFactor)))
+	} else {
+		thumbWidth = uint(math.Floor(float64(imgWidth) / float64(heightScaleFactor)))
+		thumbHeight = uint(math.Floor(float64(imgHeight) / float64(heightScaleFactor)))
+	}
+
+	log.Print(thumbWidth)
+	log.Print(thumbHeight)
+
+	return resize.Resize(thumbWidth, thumbHeight, img, THUMB_INTERPOLATION)
+}
+
 func SaveImage(ir *ImageUploaderResource, c *gin.Context, imageTypeName string) (*api.Response, *api.Error) {
 	var response *api.Response
 	var api_error *api.Error
@@ -262,7 +343,7 @@ func SaveImage(ir *ImageUploaderResource, c *gin.Context, imageTypeName string) 
 		return response, api_error
 	}
 
-	thumb := resize.Resize(uint(apiImageType.Thumb_width), uint(apiImageType.Thumb_height), thumb_img, resize.Lanczos3)
+	thumb := thumbnail(uint(apiImageType.Thumb_width), uint(apiImageType.Thumb_height), thumb_img)
 
 	out, err = os.Create(thumb_path)
 
