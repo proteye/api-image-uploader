@@ -11,11 +11,14 @@ import (
 )
 
 func getConfig(c *cli.Context) (service.Config, error) {
-	yamlPath := c.GlobalString("config")
+	yamlPath := "config-local.yaml"
 	config := service.Config{}
 
 	if _, err := os.Stat(yamlPath); err != nil {
-		return config, errors.New("config path not valid")
+		yamlPath = c.GlobalString("config")
+		if _, err := os.Stat(yamlPath); err != nil {
+			return config, errors.New("config path not valid")
+		}
 	}
 
 	ymlData, err := ioutil.ReadFile(yamlPath)

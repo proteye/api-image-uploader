@@ -1,6 +1,6 @@
 svchost: :8080
 dbuser: root
-dbpassword: "qwe123Q!"
+dbpassword: ""
 dbhost: localhost
 dbname: image_uploader
 mode: debug
