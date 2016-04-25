@@ -311,7 +311,9 @@ func SaveImage(ir *ImageUploaderResource, c *gin.Context, imageTypeName string) 
 	defer out.Close()
 
 	if file_type == api.JpegType {
-		jpeg.Encode(out, thumb, nil)
+		var options jpeg.Options
+		options.Quality = int(100)
+		jpeg.Encode(out, thumb, &options)
 	} else if file_type == api.PngType {
 		png.Encode(out, thumb)
 	}
