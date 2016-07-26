@@ -64,7 +64,7 @@ func (s *ImageUploaderService) Migrate(cfg Config) error {
 
 	imageType := api.ImageType{
 		Name:         "order",
-		Path:         "/image",
+		Path:         "/order",
 		Thumb_width:  320,
 		Thumb_height: 240,
 		Created_at:   int32(time.Now().Unix()),
@@ -77,6 +77,26 @@ func (s *ImageUploaderService) Migrate(cfg Config) error {
 		Path:         "/user",
 		Thumb_width:  150,
 		Thumb_height: 150,
+		Created_at:   int32(time.Now().Unix()),
+		Updated_at:   int32(time.Now().Unix()),
+	}
+	db.Create(&imageType)
+
+	imageType := api.ImageType{
+		Name:         "advert",
+		Path:         "/advert",
+		Thumb_width:  320,
+		Thumb_height: 240,
+		Created_at:   int32(time.Now().Unix()),
+		Updated_at:   int32(time.Now().Unix()),
+	}
+	db.Create(&imageType)
+
+	imageType := api.ImageType{
+		Name:         "image",
+		Path:         "/image",
+		Thumb_width:  320,
+		Thumb_height: 240,
 		Created_at:   int32(time.Now().Unix()),
 		Updated_at:   int32(time.Now().Unix()),
 	}
