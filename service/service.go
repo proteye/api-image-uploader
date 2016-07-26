@@ -86,7 +86,7 @@ func (s *ImageUploaderService) Migrate(cfg Config) error {
 	}
 	db.Create(&imageType)
 
-	imageType := api.ImageType{
+	imageType = api.ImageType{
 		Name:         "advert",
 		Path:         "/advert",
 		Thumb_width:  320,
@@ -96,7 +96,7 @@ func (s *ImageUploaderService) Migrate(cfg Config) error {
 	}
 	db.Create(&imageType)
 
-	imageType := api.ImageType{
+	imageType = api.ImageType{
 		Name:         "image",
 		Path:         "/image",
 		Thumb_width:  320,
