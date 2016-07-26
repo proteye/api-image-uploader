@@ -5,6 +5,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 	"github.com/proteye/api-image-uploader/api"
+	"log"
 	"time"
 )
 
@@ -34,7 +35,10 @@ func (s *ImageUploaderService) getDb(cfg Config) (*gorm.DB, error) {
 	db, err := gorm.Open("mysql", connectionString)
 
 	if err != nil {
+		log.Print("Failed to connect database!")
 		panic("failed to connect database")
+	} else {
+		log.Print("The database connection is successful!")
 	}
 
 	return db, nil
